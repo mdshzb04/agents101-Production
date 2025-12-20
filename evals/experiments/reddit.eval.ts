@@ -13,7 +13,7 @@ const createToolCallMessage = (toolName: string) => ({
   ],
 })
 
-runEval('generateImage', {
+runEval('reddit', {
   task: (input) =>
     runLLM({
       messages: [{ role: 'user', content: input }],
