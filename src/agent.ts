@@ -5,12 +5,26 @@ import { showLoader, logMessage } from './ui'
 import { runTool } from './toolRunner'
 import { generateImageToolDefinition } from './tools/generateImage'
 
+/**
+ * Narrow AIMessage → assistant with tool_calls
+ */
+const getFirstToolCall = (message?: AIMessage) => {
+  if (
+    message?.role === 'assistant' &&
+    Array.isArray(message.tool_calls) &&
+    message.tool_calls.length > 0
+  ) {
+    return message.tool_calls[0]
+  }
+  return null
+}
+
 const handleImageApprovalFlow = async (
   history: AIMessage[],
   userMessage: string
 ) => {
   const lastMessage = history[history.length - 1]
-  const toolCall = lastMessage?.tool_calls?.[0]
+  const toolCall = getFirstToolCall(lastMessage)
 
   if (
     !toolCall ||
@@ -25,8 +39,6 @@ const handleImageApprovalFlow = async (
   if (approved) {
     loader.update(`executing tool: ${toolCall.function.name}`)
     const toolResponse = await runTool(toolCall, userMessage)
-
-    loader.update(`done: ${toolCall.function.name}`)
     await saveToolResponse(toolCall.id, toolResponse)
   } else {
     await saveToolResponse(
@@ -36,7 +48,6 @@ const handleImageApprovalFlow = async (
   }
 
   loader.stop()
-
   return true
 }
 
@@ -68,10 +79,10 @@ export const runAgent = async ({
       return getMessages()
     }
 
-    if (response.tool_calls) {
-      const toolCall = response.tool_calls[0]
+    const toolCall = getFirstToolCall(response)
+
+    if (toolCall) {
       logMessage(response)
-      loader.update(`executing: ${toolCall.function.name}`)
 
       if (toolCall.function.name === generateImageToolDefinition.name) {
         loader.update('need user approval')
@@ -79,6 +90,7 @@ export const runAgent = async ({
         return getMessages()
       }
 
+      loader.update(`executing: ${toolCall.function.name}`)
       const toolResponse = await runTool(toolCall, userMessage)
       await saveToolResponse(toolCall.id, toolResponse)
       loader.update(`done: ${toolCall.function.name}`)
@@ -103,9 +115,9 @@ export const runAgentEval = async ({
       return messages
     }
 
-    if (response.tool_calls) {
-      const toolCall = response.tool_calls[0]
+    const toolCall = getFirstToolCall(response)
 
+    if (toolCall) {
       if (toolCall.function.name === generateImageToolDefinition.name) {
         return messages
       }
