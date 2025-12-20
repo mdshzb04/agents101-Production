@@ -1,7 +1,6 @@
 import type { Scorer } from 'autoevals'
 
 export const ToolCallMatch: Scorer<any, {}> = async ({
-  input,
   output,
   expected,
 }) => {
