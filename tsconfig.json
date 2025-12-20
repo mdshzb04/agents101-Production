@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-      "lib": ["ESNext"],
+      "lib": ["ESNext","DOM", "DOM.Iterable", "ES2020"],
       "target": "ESNext",
       "module": "ESNext",
       "moduleDetection": "force",
@@ -16,6 +16,8 @@
       /* Linting */
       "skipLibCheck": true,
       "strict": true,
+      "resolveJsonModule":true,
+      "esModuleInterop":true,
       "noFallthroughCasesInSwitch": true,
       "forceConsistentCasingInFileNames": true
     }
