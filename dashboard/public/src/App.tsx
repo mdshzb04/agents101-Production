@@ -1,10 +1,8 @@
 import { useState } from 'react'
 import ExperimentGraph from './components/ExperimentGraph'
-import resultsData from '../results.json'
+import resultsData from '../results'
 import type { Results } from '../../../types'
-
 import './App.css'
-
 
 const App = () => {
   const results = resultsData as Results

@@ -8,7 +8,7 @@ import {
     Legend,
   } from 'recharts'
   
-  import type { Experiment,ExperimentSet } from '../types'
+  import { Experiment,ExperimentSet } from '../types'
   
   interface ExperimentGraphProps {
     experiment: Experiment
