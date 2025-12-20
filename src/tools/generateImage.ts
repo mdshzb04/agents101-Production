@@ -4,22 +4,19 @@ import { openai } from '../ai'
 
 export const generateImageToolDefinition = {
   name: 'generate_image',
+  description: 'generate an image',
   parameters: z.object({
     prompt: z
       .string()
       .describe(
-        `prompt for the image. Be sure to consider the user's original message when making the prompt. If you are unsure, then as the user to provide more details.`
+        "Prompt for the image. Consider the user's message when creating it."
       ),
   }),
-  description: 'generate an image',
 }
 
 type Args = z.infer<typeof generateImageToolDefinition.parameters>
 
-export const generateImage: ToolFn<Args, string> = async ({
-  toolArgs,
-  userMessage,
-}) => {
+export const generateImage: ToolFn<Args, string> = async ({ toolArgs }) => {
   const response = await openai.images.generate({
     model: 'dall-e-3',
     prompt: toolArgs.prompt,
@@ -27,5 +24,12 @@ export const generateImage: ToolFn<Args, string> = async ({
     size: '1024x1024',
   })
 
-  return response.data[0].url!
+  const imageData = response.data[0]
+
+  // 🔑 Proper union narrowing
+  if (!imageData || typeof imageData.url !== 'string') {
+    throw new Error('Failed to generate image: URL not returned from OpenAI')
+  }
+
+  return imageData.url
 }
