@@ -24,10 +24,14 @@ export const generateImage: ToolFn<Args, string> = async ({ toolArgs }) => {
     size: '1024x1024',
   })
 
+  if (!response.data || response.data.length === 0) {
+    throw new Error('Failed to generate image: no data returned from OpenAI')
+  }
+
   const imageData = response.data[0]
 
-  // 🔑 Proper union narrowing
-  if (!imageData || typeof imageData.url !== 'string') {
+  
+  if (typeof imageData.url !== 'string') {
     throw new Error('Failed to generate image: URL not returned from OpenAI')
   }
 
