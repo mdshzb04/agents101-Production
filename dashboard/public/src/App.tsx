@@ -1,18 +1,18 @@
 import { useState } from 'react'
 import ExperimentGraph from './components/ExperimentGraph'
-import resultsData from '../results'
-import type { Results } from '../../../types'
+import resultsData from './results.json'
+import type { Results } from '@types'
 import './App.css'
 
 const App = () => {
-  const results = resultsData as Results
+  const results: Results = resultsData
 
   const [selectedExperiment, setSelectedExperiment] = useState(
-    results.experiments?.[0]?.name ?? ''
+    results.experiments[0]?.name ?? ''
   )
 
   const currentExperiment = results.experiments.find(
-    (exp) => exp.name === selectedExperiment
+    exp => exp.name === selectedExperiment
   )
 
   const limitedExperiment = currentExperiment
@@ -25,9 +25,9 @@ const App = () => {
 
       <select
         value={selectedExperiment}
-        onChange={(e) => setSelectedExperiment(e.target.value)}
+        onChange={e => setSelectedExperiment(e.target.value)}
       >
-        {results.experiments.map((exp) => (
+        {results.experiments.map(exp => (
           <option key={exp.name} value={exp.name}>
             {exp.name}
           </option>

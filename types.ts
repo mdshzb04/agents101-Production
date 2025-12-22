@@ -5,9 +5,10 @@ export type AIMessage =
   | { role: 'user'; content: string }
   | { role: 'tool'; content: string; tool_call_id: string }
 
-export interface ToolFn<A = any, T = any> {
+export interface ToolFn<A = unknown, T = unknown> {
   (input: { userMessage: string; toolArgs: A }): Promise<T>
 }
+
 export interface Score {
   name: string
   score: number
@@ -18,15 +19,16 @@ export interface Run {
   output: {
     role: string
     content: string | null
-    tool_calls?: any[]
+    tool_calls?: unknown[]
     refusal: null
+    annotations?: unknown[]
   }
-  expected: string
+  expected: unknown
   scores: Score[]
   createdAt: string
 }
 
-export interface Set {
+export interface ExperimentSet {
   runs: Run[]
   score: number
   createdAt: string
@@ -34,7 +36,7 @@ export interface Set {
 
 export interface Experiment {
   name: string
-  sets: Set[]
+  sets: ExperimentSet[]
 }
 
 export interface Results {
