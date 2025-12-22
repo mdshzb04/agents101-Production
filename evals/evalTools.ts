@@ -3,18 +3,21 @@ import type { Score, Scorer } from 'autoevals'
 import chalk from 'chalk'
 import { JSONFilePreset } from 'lowdb/node'
 
-type Run = {
-  input: any
-  output: any
-  expected: any
-  scores: {
-    name: Score['name']
-    score: Score['score']
-  }[]
-  createdAt?: string
+
+type RunScore = {
+  name: Score['name']
+  score: NonNullable<Score['score']>
 }
 
-type Set = {
+type Run = {
+  input: unknown
+  output: unknown
+  expected: unknown
+  scores: RunScore[]
+  createdAt: string
+}
+
+type ExperimentSet = {
   runs: Run[]
   score: number
   createdAt: string
@@ -22,7 +25,7 @@ type Set = {
 
 type Experiment = {
   name: string
-  sets: Set[]
+  sets: ExperimentSet[]
 }
 
 type Data = {
@@ -34,19 +37,25 @@ const defaultData: Data = {
 }
 
 const getDb = async () => {
-  const db = await JSONFilePreset<Data>('results.json', defaultData)
-  return db
+  return JSONFilePreset<Data>('results.json', defaultData)
 }
 
-const calculateAvgScore = (runs: Run[]) => {
-  const totalScores = runs.reduce((sum, run) => {
+
+const calculateAvgScore = (runs: Run[]): number => {
+  if (runs.length === 0) return 0
+
+  const total = runs.reduce((sum, run) => {
+    if (run.scores.length === 0) return sum
+
     const runAvg =
-      run.scores.reduce((sum, score) => sum + score.score, 0) /
-      run.scores.length
+      run.scores.reduce((s, sc) => s + sc.score, 0) / run.scores.length
+
     return sum + runAvg
   }, 0)
-  return totalScores / runs.length
+
+  return total / runs.length
 }
+
 
 export const loadExperiment = async (
   experimentName: string
@@ -61,23 +70,25 @@ export const saveSet = async (
 ) => {
   const db = await getDb()
 
-  const runsWithTimestamp = runs.map((run) => ({
+  const now = new Date().toISOString()
+
+  const runsWithTimestamp: Run[] = runs.map((run) => ({
     ...run,
-    createdAt: new Date().toISOString(),
+    createdAt: now,
   }))
 
-  const newSet = {
+  const newSet: ExperimentSet = {
     runs: runsWithTimestamp,
     score: calculateAvgScore(runsWithTimestamp),
-    createdAt: new Date().toISOString(),
+    createdAt: now,
   }
 
-  const existingExperiment = db.data.experiments.find(
+  const experiment = db.data.experiments.find(
     (e) => e.name === experimentName
   )
 
-  if (existingExperiment) {
-    existingExperiment.sets.push(newSet)
+  if (experiment) {
+    experiment.sets.push(newSet)
   } else {
     db.data.experiments.push({
       name: experimentName,
@@ -88,61 +99,75 @@ export const saveSet = async (
   await db.write()
 }
 
-export const runEval = async <T = any>(
+
+type TaskResult<T> =
+  | T
+  | {
+      response: T
+      context?: string | string[]
+    }
+
+export const runEval = async <T>(
   experiment: string,
   {
     task,
     data,
     scorers,
   }: {
-    task: (input: any) => Promise<T>
-    data: { input: any; expected?: T; reference?: string | string[] }[]
-    scorers: Scorer<T, any>[]
+    task: (input: unknown) => Promise<TaskResult<T>>
+    data: { input: unknown; expected?: T; reference?: string | string[] }[]
+    scorers: Scorer<T, unknown>[]
   }
-) => {
-  const results = await Promise.all(
+): Promise<Run[]> => {
+  const results: Run[] = await Promise.all(
     data.map(async ({ input, expected, reference }) => {
-      const results = await task(input)
-      let context: string | string[]
-      let output: string
+      const taskResult = await task(input)
 
-      if (results.context) {
-        context = results.context
-        output = results.response
+      let output: unknown
+      let context: string | string[] | undefined
+
+      if (
+        typeof taskResult === 'object' &&
+        taskResult !== null &&
+        'response' in taskResult
+      ) {
+        output = taskResult.response
+        context = taskResult.context
       } else {
-        output = results
+        output = taskResult
       }
 
-      const scores = await Promise.all(
+      const scores: RunScore[] = await Promise.all(
         scorers.map(async (scorer) => {
-          const score = await scorer({
+          const s = await scorer({
             input,
-            output: results,
+            output,
             expected,
             reference,
             context,
           })
+
           return {
-            name: score.name,
-            score: score.score,
+            name: s.name,
+            score: s.score ?? 0,
           }
         })
       )
 
-      const result = {
+      return {
         input,
         output,
         expected,
         scores,
+        createdAt: new Date().toISOString(),
       }
-
-      return result
     })
   )
 
   const previousExperiment = await loadExperiment(experiment)
   const previousScore =
-    previousExperiment?.sets[previousExperiment.sets.length - 1]?.score || 0
+    previousExperiment?.sets.at(-1)?.score ?? 0
+
   const currentScore = calculateAvgScore(results)
   const scoreDiff = currentScore - previousScore
 
