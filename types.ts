@@ -16,13 +16,18 @@ export interface Score {
 
 export interface Run {
   input: string
-  output: {
-    role: string
-    content: string | null
-    tool_calls?: unknown[]
-    refusal: null
-    annotations?: unknown[]
-  }
+
+  // FIX: output can be STRING or OBJECT (this matches your JSON)
+  output:
+    | string
+    | {
+        role: string
+        content: string | null
+        tool_calls?: unknown[]
+        refusal?: null
+        annotations?: unknown[]
+      }
+
   expected: unknown
   scores: Score[]
   createdAt: string
