@@ -67,7 +67,7 @@ export const runApprovalCheck = async (userMessage: string) => {
 export const summarizeMessages = async (messages: AIMessage[]) => {
   const response = await runLLM({
     systemPrompt:
-      'Summarize the key points of the conversation in a concise way that would be helpful as context for future interactions. Make it like a play by play of the conversation.',
+      'Your job is to summarize the given messages to be used in another LLMs system prompt,Summarize it play by play',
     messages,
     temperature: 0.3,
   })
