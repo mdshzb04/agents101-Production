@@ -50,7 +50,8 @@ const handleImageApprovalFlow = async (
   loader.stop()
   return true
 }
-
+const history=await getMessages()
+const isApproval=await getMessages()
 export const runAgent = async ({
   userMessage,
   tools,
@@ -59,9 +60,9 @@ export const runAgent = async ({
   tools: any[]
 }) => {
   const history = await getMessages()
-  const isImageApproval = await handleImageApprovalFlow(history, userMessage)
+  const isApproval = await handleImageApprovalFlow(history, userMessage)
 
-  if (!isImageApproval) {
+  if (!isApproval) {
     await addMessages([{ role: 'user', content: userMessage }])
   }
 
@@ -78,6 +79,14 @@ export const runAgent = async ({
       logMessage(response)
       return getMessages()
     }
+    if(response.tool_calls){
+      const toolCall=response.tool_calls[0]
+      logMessage(response)
+      loader.update(`executing':${toolCall.function.name}`)
+    }
+
+   
+
 
     const toolCall = getFirstToolCall(response)
 
