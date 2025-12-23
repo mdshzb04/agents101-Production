@@ -27,3 +27,57 @@ Here is a humorous meme for you:
 ![Humorous Meme](https://oaidalleapiprodscus.blob.core.windows.net/private/org-AM8rkjGrcwMKywckzR6zxV6N/user-7mVfw6WGkBnJ2Hf0ed68cYDl/img-hBi2A5L0ZDvBjOsPD5EKepmT.png?st=2025-12-23T14%3A29%3A11Z&se=2025-12-23T16%3A29%3A11Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=77e5a8ec-6bd1-4477-8afc-16703a64f029&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-12-23T14%3A39%3A53Z&ske=2025-12-24T14%3A39%3A53Z&sks=b&skv=2024-08-04&sig=o4uWkG1fsrRZZlWfPo4HRPn/o8smX49ouZBp6ftrNSk%3D)
 
 If you need more memes or any other assistance, just let me know!
+
+npm run ingest
+
+> ingest
+> npx tsx src/rag/ingest.ts
+
+✔ Finished indexing movie data
+
+ npm run eval
+
+> eval
+> npx tsx evals/run.ts $1
+
+Experiment: dadJoke
+Previous score: 1.00
+Current score: 1.00
+Difference: 0.00
+
+Experiment: reddit
+Previous score: 1.00
+Current score: 1.00
+Difference: 0.00
+
+Experiment: allTools
+Previous score: 0.00
+Current score: 1.00
+Difference: +1.00
+
+
+
+ npm start "find a movie which involves superheroes logic?"
+
+> start
+> npx tsx index.ts find a movie which involves superheroes logic?
+
+[ASSISTANT]
+movieSearch
+
+[ASSISTANT]
+movieSearch
+[ASSISTANT]
+Here are a couple of action movies that involve elements of superhero logic:
+
+1. **Kickboxer: Vengeance** (2016)
+   - **Director:** John Stockwell
+   - **Actors:** Dave Bautista, Alain Moussi, Gina Carano, Jean-Claude Van Damme
+   - **Rating:** 4.9
+   - **Description:** A kickboxer is out to avenge his brother.
+
+2. **Boyka: Undisputed IV** (2016)
+   - **Director:** Todor Chapkanov
+   - **Actors:** Scott Adkins, Teodora Duhovnikova, Alon Aboutboul, Julian Vergov
+   - **Rating:** 7.4
+   - **Description:** In the fourth installment of the fighting franchise, Boyka is shooting for the big leagues when an accidental death in the ring makes him question everything he stands for.
