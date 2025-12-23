@@ -1,0 +1,29 @@
+npm start "create a meme on humour topic" 
+
+> start
+> npx tsx index.ts create a meme on humour topic
+ 🤔
+[ASSISTANT]
+generate_image
+
+
+Do you approve generating an image? (yes/no)
+
+
+[ASSISTANT]
+generate_image
+
+
+Do you approve generating an image? (yes/no)
+
+➜  AFS-PRODUCTION git:(main) ✗ npm start "yes"
+
+> start
+> npx tsx index.ts yes
+
+[ASSISTANT]
+Here is a humorous meme for you:
+
+![Humorous Meme](https://oaidalleapiprodscus.blob.core.windows.net/private/org-AM8rkjGrcwMKywckzR6zxV6N/user-7mVfw6WGkBnJ2Hf0ed68cYDl/img-hBi2A5L0ZDvBjOsPD5EKepmT.png?st=2025-12-23T14%3A29%3A11Z&se=2025-12-23T16%3A29%3A11Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=77e5a8ec-6bd1-4477-8afc-16703a64f029&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-12-23T14%3A39%3A53Z&ske=2025-12-24T14%3A39%3A53Z&sks=b&skv=2024-08-04&sig=o4uWkG1fsrRZZlWfPo4HRPn/o8smX49ouZBp6ftrNSk%3D)
+
+If you need more memes or any other assistance, just let me know!
