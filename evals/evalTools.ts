@@ -9,28 +9,32 @@ type RunScore = {
   score: NonNullable<Score['score']>
 }
 
-type Run = {
+type Run<T = unknown> = {
   input: unknown
-  output: unknown
-  expected: unknown
+  output: T
+  expected?: T
   scores: RunScore[]
   createdAt: string
 }
 
-type ExperimentSet = {
-  runs: Run[]
+
+type ExperimentSet<T = unknown> = {
+  runs: Run<T>[]
   score: number
   createdAt: string
 }
 
-type Experiment = {
+
+type Experiment<T = unknown> = {
   name: string
-  sets: ExperimentSet[]
+  sets: ExperimentSet<T>[]
 }
 
+
 type Data = {
-  experiments: Experiment[]
+  experiments: Experiment<any>[]
 }
+
 
 const defaultData: Data = {
   experiments: [],
@@ -41,7 +45,8 @@ const getDb = async () => {
 }
 
 
-const calculateAvgScore = (runs: Run[]): number => {
+const calculateAvgScore = <T>(runs: Run<T>[]): number => {
+
   if (runs.length === 0) return 0
 
   const total = runs.reduce((sum, run) => {
@@ -66,7 +71,8 @@ export const loadExperiment = async (
 
 export const saveSet = async (
   experimentName: string,
-  runs: Omit<Run, 'createdAt'>[]
+  runs: Omit<Run<any>, 'createdAt'>[]
+
 ) => {
   const db = await getDb()
 
@@ -118,12 +124,13 @@ export const runEval = async <T>(
     data: { input: unknown; expected?: T; reference?: string | string[] }[]
     scorers: Scorer<T, unknown>[]
   }
-): Promise<Run[]> => {
-  const results: Run[] = await Promise.all(
+): Promise<Run<T>[]> => {
+
+  const results: Run<T>[] = await Promise.all(
     data.map(async ({ input, expected, reference }) => {
       const taskResult = await task(input)
 
-      let output: unknown
+      let output: T
       let context: string | string[] | undefined
 
       if (
