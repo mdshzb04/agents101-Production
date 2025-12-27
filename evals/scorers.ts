@@ -1,21 +1,7 @@
 import type { Scorer } from 'autoevals'
 
-type ToolCall = {
-  function?: {
-    name?: string
-  }
-}
-
-type AssistantOutput = {
-  role: string
-  tool_calls?: ToolCall[]
-}
-
-type ExpectedOutput = {
-  tool_calls: ToolCall[]
-}
-
-export const ToolCallMatch: Scorer<AssistantOutput, unknown> = async ({
+export const ToolCallMatch: Scorer<any, {}> = async ({
+  input,
   output,
   expected,
 }) => {
@@ -24,7 +10,7 @@ export const ToolCallMatch: Scorer<AssistantOutput, unknown> = async ({
     Array.isArray(output.tool_calls) &&
     output.tool_calls.length === 1 &&
     output.tool_calls[0].function?.name ===
-      expected?.tool_calls?.[0]?.function?.name
+      expected.tool_calls[0].function?.name
       ? 1
       : 0
 
