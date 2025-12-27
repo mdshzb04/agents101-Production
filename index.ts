@@ -1,9 +1,12 @@
-const message = process.env.MESSAGE
+import 'dotenv/config'
+import { runAgent} from './src/agent'
+import { tools } from './src/tools'
 
-if (!message) {
-  console.log("No MESSAGE provided. App started successfully.")
-  
-  setInterval(() => {}, 1 << 30) 
+const userMessage = process.argv[2]
+
+if (!userMessage) {
+  console.error('Please provide a message')
+  process.exit(1)
 }
 
-console.log("Message:", message)
+await runAgent({ userMessage, tools })
